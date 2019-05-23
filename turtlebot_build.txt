@@ -1,0 +1,147 @@
+# ubuntu setting
+
+$ sudo apt-get update
+$ sudo apt-get upgrade
+$ wget https://raw.githubusercontent.com/ROBOTIS-GIT/robotis_tools/master/install_ros_kinetic.sh && chmod 755 ./install_ros_kinetic.sh && bash ./install_ros_kinetic.sh
+
+$ sudo apt-get install ros-kinetic-joy ros-kinetic-teleop-twist-joy ros-kinetic-teleop-twist-keyboard ros-kinetic-laser-proc ros-kinetic-rgbd-launch ros-kinetic-depthimage-to-laserscan ros-kinetic-rosserial-arduino ros-kinetic-rosserial-python ros-kinetic-rosserial-server ros-kinetic-rosserial-client ros-kinetic-rosserial-msgs ros-kinetic-amcl ros-kinetic-map-server ros-kinetic-move-base ros-kinetic-urdf ros-kinetic-xacro ros-kinetic-compressed-image-transport ros-kinetic-rqt-image-view ros-kinetic-gmapping ros-kinetic-navigation ros-kinetic-interactive-markers
+
+$ cd ~/catkin_ws/src/
+$ git clone https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+$ git clone https://github.com/ROBOTIS-GIT/turtlebot3.git
+$ cd ~/catkin_ws && catkin_make
+
+# raspberry pi setting from raspbian
+# ROS Kinetic
+# https://neverbenever.wordpress.com/2017/12/20/install-ros-and-opencv-in-raspberry-piraspbian-stretch/
+# http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Kinetic%20on%20the%20Raspberry%20Pi
+
+#Increase swap space size:
+
+sudo nano /etc/dphys–swapfile 
+
+# set size to absolute value, leaving empty (default) then uses computed value
+# you most likely don't want this, unless you have an special disk situation
+# CONF_SWAPSIZE=100
+CONF_SWAPSIZE=1024
+
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
+
+sudo apt install dirmngr
+
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+
+sudo apt update
+sudo apt upgrade
+
+sudo apt-get install -y python-rosdep python-rosinstall-generator python-wstool python-rosinstall build-essential cmake 
+
+sudo rosdep init
+rosdep update
+
+mkdir -p ~/ros_catkin_ws
+
+rosinstall_generator ros_comm --rosdistro kinetic --deps --wet-only --tar > kinetic-ros_comm-wet.rosinstall
+
+wstool init src kinetic-ros_comm-wet.rosinstall
+
+rosinstall_generator robot --rosdistro kinetic --deps --wet-only --tar > kinetic-robot-wet.rosinstall
+
+wstool init src kinetic-robot-wet.rosinstall
+
+wstool update -j4 -t src
+
+mkdir -p ~/ros_catkin_ws/external_src
+cd ~/ros_catkin_ws/external_src
+wget http://sourceforge.net/projects/assimp/files/assimp-3.1/assimp-3.1.1_no_test_models.zip/download -O assimp-3.1.1_no_test_models.zip
+unzip assimp-3.1.1_no_test_models.zip
+cd assimp-3.1.1
+cmake .
+make
+sudo make install
+
+cd ~/ros_catkin_ws
+rosdep install -y --from-paths src --ignore-src --rosdistro kinetic -r --os=debian:stretch
+
+# Building the catkin Workspace
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/kinetic
+
+# 빌드 타임이 오래걸리면 아래 명령어로 대신한다.
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/kinetic -j2
+
+source /opt/ros/kinetic/setup.bash
+
+##### OpenCR Firmware Upload for TB3 ######################
+###########################################################
+
+export OPENCR_PORT=/dev/ttyACM0
+export OPENCR_MODEL=waffle
+rm -rf ./opencr_update.tar.bz2
+wget https://github.com/ROBOTIS-GIT/OpenCR-Binaries/raw/master/turtlebot3/ROS1/latest/opencr_update.tar.bz2 
+tar -xvf opencr_update.tar.bz2
+cd ./opencr_update 
+./update.sh $OPENCR_PORT $OPENCR_MODEL.opencr 
+cd ..
+
+#### raspberry setting from customized image
+
+# 한글 깨짐 방지 
+sudo apt install fonts-unfonts-core ibus-hangul
+
+### ubuntu Arduino IDE install
+# http://emanual.robotis.com/docs/en/parts/controller/opencr10/#arduino-ide
+
+wget https://raw.githubusercontent.com/ROBOTIS-GIT/OpenCR/master/99-opencr-cdc.rules
+sudo cp ./99-opencr-cdc.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+sudo apt install libncurses5-dev:i386
+
+# https://www.arduino.cc/en/Guide/Linux
+wget https://downloads.arduino.cc/arduino-1.8.9-linux64.tar.xz
+tar xf arduino-1.8.9-linux64.tar.xz
+cd arduino-1.8.9
+sudo ./install.sh  
+sudo usermod -a -G dialout <username>
+
+cd ~
+vi ~/.bashrc
+맨 아랫 줄에 다음 줄 추가 
+export PATH=$PATH:~/arduino
+
+source ~/.bashrc
+arduino
+
+#After Arduino IDE is run, click File → Preferences in the top menu of the IDE. When the Preferences window appears, copy and paste following link to the Additional Boards Manager URLs textbox. (This step may take about 20 min.)
+
+#Additional Boards Manager URLs textbox
+
+# https://raw.githubusercontent.com/ROBOTIS-GIT/OpenCR/master/arduino/opencr_release/package_opencr_index.json
+
+# Install the OpenCR package via Boards Manager
+Click Tools → Board → Boards Manager.
+Type OpenCR into the textbox to find the OpenCR by ROBOTIS package. After it finds out, click Install.
+See if OpenCR Board is now on the list of Tools → Board. Click this to import the OpenCR Board source.
+
+# Port setting
+Select Tools → Port → /dev/ttyACM0.
+
+# Install the Arduino IDE on RASPBERRY pi
+sudo apt update
+sudo apt upgrade -y 
+
+# Make the OpenCR USB port be able to upload the Arduino IDE program without root permission.
+wget https://raw.githubusercontent.com/ROBOTIS-GIT/OpenCR/master/99-opencr-cdc.rules
+sudo cp ./99-opencr-cdc.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+ 
+
+# 프로그램 메뉴에서 아두이노 실행
+
+-	끝 - 
