@@ -1,0 +1,192 @@
+# /etc/hosts 파일에 raspberry ip 등록
+$ sudo vi /etc/hosts
+
+# 맨 아랫 줄에 아래와 같이 등록 
+192.168.0.51 ubuntu
+192.168.0.65 rasp raspberry
+
+# 24.8 How to update software
+    # RASPBERRY
+    $ cd ~/catkin_ws/src/
+    $ \rm -rf turtlebot3/ turtlebot3_msgs/ hls_lfcd_lds_driver/
+    $ git clone https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver.git
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3.git
+    $ cd ~/catkin_ws/src/turtlebot3
+    $ sudo rm -r turtlebot3_description/ turtlebot3_teleop/ turtlebot3_navigation/ turtlebot3_slam/ turtlebot3_example/
+    $ cd ~/catkin_ws/
+    $ rm -rf build/ devel/
+    $ cd ~/catkin_ws && catkin_make -j1
+
+    # UBUNTU
+    $ cd ~/catkin_ws/src/
+    $ rm -rf turtlebot3/ turtlebot3_msgs/
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3_msgs.git
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3.git
+    $ cd ~/catkin_ws/
+    $ rm -rf build/ devel/
+    $ cd ~/catkin_ws && catkin_make
+
+# bringup
+    # http://emanual.robotis.com/docs/en/platform/turtlebot3/bringup/#bringup
+
+# 7.1 Run roscore
+    # UBUNTU
+    $ roscore &
+
+# 7.2 Bringup a TurtleBot3
+    # 터틀봇 로봇을 라스베리파이에서 실행 
+    # RASPBERRY 
+    $ roslaunch turtlebot3_bringup turtlebot3_robot.launch
+
+    # (실패, 안됨) 터틀봇 로봇을 우분투에서 실행
+    # UBUNTU
+    # sshpass 설치 
+    $ sudo apt install sshpass
+    $ sshpass -p 'a' ssh -t pi@rasp /home/pi/autodrive/ros_run
+
+# bringup as service
+    # http://docs.ros.org/jade/api/robot_upstart/html/
+    # UBUNTU 
+    $ cd ~
+    $ git clone https://github.com/clearpathrobotics/robot_upstart.git
+    $ cd robot_upstart
+    $ python setup.py install 
+    $ rosrun robot_upstart install myrobot_bringup/launch/base.launch
+
+# 7.3 Load a TurtleBot3 on Rviz
+    # UBUNTU
+    $ export TURTLEBOT3_MODEL=waffle_pi
+    $ roslaunch turtlebot3_bringup turtlebot3_remote.launch &
+    $ rosrun rviz rviz -d `rospack find turtlebot3_description`/rviz/model.rviz
+
+# 8 Basic Operation
+  # Topic Monitor
+  # UBUNTU
+  $ rqt
+
+# 8.2.1 KeyBoard
+# UBUNTU
+$ export TURTLEBOT3_MODEL=waffle_pi
+$ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+# 8.3 Basic Examples
+    # 8.3.1 Move using Interactive Markers
+        # ubuntu
+        # launch the interactive markers file.
+        $ roslaunch turtlebot3_example interactive_markers.launch &
+        #  Visualize the model in 3D with RViz.
+        $ rosrun rviz rviz -d `rospack find turtlebot3_example`/rviz/turtlebot3_interactive.rviz
+
+    # 8.3.2 Obstacle Detection
+        $ roslaunch turtlebot3_example turtlebot3_obstacle.launch
+
+    # 8.3.3 Point Operation
+        $ roslaunch turtlebot3_example turtlebot3_pointop_key.launch
+
+    # 8.3.4 Patrol
+        # [Remote PC] Launch the patrol server file.
+        $ rosrun turtlebot3_example turtlebot3_server
+        # [Remote PC] Launch the patrol client file.
+        $ roslaunch turtlebot3_example turtlebot3_client.launch
+
+# 8.4 Additional Sensors
+    # turtlebot burger
+
+# 9 SLAM
+# 9.1 Run SLAM Nodes
+    [Remote PC] Run roscore. 
+    $ roscore
+
+    [TurtleBot] Bring up basic packages to start TurtleBot3 applications. 
+    $ roslaunch turtlebot3_bringup turtlebot3_robot.launch
+
+    [Remote PC]
+    # gmapping SLAM
+    $ roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+    # Karto SLAM
+    $ roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=karto
+    
+    [Remote PC]
+    # catographer slam install
+        $ sudo apt-get install ninja-build libceres-dev libprotobuf-dev protobuf-compiler libprotoc-dev
+        $ cd ~/catkin_ws/src
+        $ git clone https://github.com/googlecartographer/cartographer.git
+        $ git clone https://github.com/googlecartographer/cartographer_ros.git
+        $ cd ~/catkin_ws
+        $ src/cartographer/scripts/install_proto3.sh
+        $ rm -rf protobuf/ 
+        $ rosdep install --from-paths src --ignore-src -r -y --os=ubuntu:xenial
+        $ catkin_make_isolated --install --use-ninja
+    # catographer slam Run
+        $ source ~/catkin_ws/install_isolated/setup.bash
+        $ roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=cartographer
+
+# 9.2 Run Teleoperation Node
+    $ $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+# 9.3 Tuning Guide
+    ~/catkin_ws/install_isolated/share/turtlebot3_slam/launch/turtlebot3_gmapping.launch
+
+# 9.4 Save Map
+    $ rosrun map_server map_saver -f ~/map
+    # install pgm viewer
+    $ sudo apt install inkscape
+
+# 10 Navigation
+
+# 10.1 Run Navigation Nodes
+    $ roslaunch turtlebot3_navigation turtlebot3_navigation.launch map_file:=$HOME/map.yaml
+    $ rviz -d `rospack find turtlebot3_navigation`/rviz/turtlebot3_navigation.rviz
+
+# 11 Simulation
+
+# 11.1 TurtleBot3 Simulation using Fake Node
+    $ cd ~/catkin_ws/src/
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3_simulations.git
+    $ cd ~/catkin_ws 
+    $ catkin_make_isolated --install --use-ninja
+
+# 11.2 TurtleBot3 Simulation using Gazebo
+    # 11.2.1 ROS packages for Gazebo
+    # 11.2.1.1 Simulate in Various World
+    $ sudo apt-get install libgazebo7-dev
+    $ 
+    $ roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+
+# 13 Autonomous Driving
+# 13.2.2 Tutorials: 2. Install AutoRace package
+    # UBUNTU 
+    $ cd ~/catkin_ws/src/
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3_autorace.git
+    $ cd ~/catkin_ws && catkin_make_isolated --install --use-ninja
+
+    # RASPBERRY
+    $ cd ~/catkin_ws/src/
+    $ git clone https://github.com/ROBOTIS-GIT/turtlebot3_autorace.git
+    $ cd ~/catkin_ws && catkin_make 
+
+# 13.2.3 Tutorials: 3. Install Additional Dependent Packages
+    # UBUNTU 
+    $ sudo apt install ros-kinetic-image-transport ros-kinetic-cv-bridge ros-kinetic-vision-opencv python-opencv libopencv-dev ros-kinetic-image-proc
+    # RASPBERRY
+    $ sudo apt install python-opencv libopencv-dev  
+
+# 13.2.4 Tutorials: 4. Calibration
+# 13.2.4.1 Tutorials: 4.1. Camera Imaging Calibration
+    # RASPBERRY
+    $ roslaunch turtlebot3_autorace_camera turtlebot3_autorace_camera_pi.launch
+
+# 22.5 Raspberry Pi Camera
+    # RASPBERRY
+    $ sudo raspi-config
+    $ raspistill -v -o test.jpg
+    $ cd ~/catkin_ws/src
+    $ git clone https://github.com/UbiquityRobotics/raspicam_node.git 
+    $ cd ~/catkin_ws && catkin_make
+    $ roslaunch turtlebot3_bringup turtlebot3_rpicamera.launch
+    or
+    $ roslaunch raspicam_node camerav2_1280x960.launch
+
+    # UBUNTU
+    $ rqt_image_view

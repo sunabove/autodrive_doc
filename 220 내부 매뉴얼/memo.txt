@@ -1,0 +1,21 @@
+$ sudo visudo
+    tom ALL=(ALL) NOPASSWD:ALL
+
+git config --global push.default matching
+git config credential.helper store
+git config --global user.email "sunabove@nate.com"
+git config --global user.name "sunabove"
+
+$ git clone https://github.com/sunabove/autodrive.git
+
+# vi 
+    : retab
+
+# kill roscore process 
+# ps aux | grep roscore
+$ killall -9 roscore
+$ killall -9 rosmaster
+
+$ sudo systemctl status rc-local
+$ sudo systemctl enable rc-local
+$ sudo chmod +x /etc/rc.local
