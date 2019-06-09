@@ -66,9 +66,9 @@ $ sudo vi /etc/hosts
   $ rqt
 
 # 8.2.1 KeyBoard
-# UBUNTU
-$ export TURTLEBOT3_MODEL=waffle_pi
-$ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+    # UBUNTU
+    $ export TURTLEBOT3_MODEL=waffle_pi
+    $ roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
 
 # 8.3 Basic Examples
     # 8.3.1 Move using Interactive Markers
