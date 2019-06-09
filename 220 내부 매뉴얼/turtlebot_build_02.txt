@@ -57,9 +57,8 @@ $ sudo vi /etc/hosts
 # 7.3 Load a TurtleBot3 on Rviz
     # UBUNTU
     $ export TURTLEBOT3_MODEL=waffle_pi
-    $ roslaunch turtlebot3_bringup turtlebot3_remote.launch &
-    $ rosrun rviz rviz -d `rospack find turtlebot3_description`/rviz/model.rviz
-
+    $ roslaunch turtlebot3_bringup turtlebot3_remote.launch 
+    
 # 8 Basic Operation
   # Topic Monitor
   # UBUNTU
@@ -75,7 +74,7 @@ $ sudo vi /etc/hosts
         # ubuntu
         # launch the interactive markers file.
         $ roslaunch turtlebot3_example interactive_markers.launch &
-        #  Visualize the model in 3D with RViz.
+        # Visualize the model in 3D with RViz.
         $ rosrun rviz rviz -d `rospack find turtlebot3_example`/rviz/turtlebot3_interactive.rviz
 
     # 8.3.2 Obstacle Detection

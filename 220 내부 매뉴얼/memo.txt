@@ -19,3 +19,6 @@ $ killall -9 rosmaster
 $ sudo systemctl status rc-local
 $ sudo systemctl enable rc-local
 $ sudo chmod +x /etc/rc.local
+
+xterm -fa monaco -fs 13 -bg black -fg green &
+
