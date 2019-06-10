@@ -22,3 +22,7 @@ $ sudo chmod +x /etc/rc.local
 
 xterm -fa monaco -fs 13 -bg black -fg green &
 
+Finding an IP address
+To find an IP address of your Raspberry Pi use nmap utility.
+It can be run from the console on your desktop: 
+    $ nmap -sn 192.168.0.*
