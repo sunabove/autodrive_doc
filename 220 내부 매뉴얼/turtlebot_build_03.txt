@@ -1,7 +1,6 @@
 # turtblebot waffle pi ROS2 on ubuntu 18.04
 # https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Development-Setup/
 
-
 * System Setup
     * Set Locale
         $ sudo locale-gen en_US en_US.UTF-8
@@ -58,6 +57,41 @@
     * PrismTech OpenSplice Debian Packages built by OSRF
         -- $ sudo apt install libopensplice69  # from packages.ros.org/ros2/ubuntu
     * RTI Connext (version 5.3.1, amd64 only)
-        $ sudo apt install -q -y \
-    rti-connext-dds-5.3.1  # from packages.ros.org/ros2/ubuntu
-        $ cd /opt/rti.com/rti_connext_dds-5.3.1/resource/scripts && source ./rtisetenv_x64Linux3gcc5.4.0.bash; cd -
+        $ sudo apt install -q -y rti-connext-dds-5.3.1  # from packages.ros.org/ros2/ubuntu
+        $ cd /opt/rti.com/rti_connext_dds-5.3.1/resource/scripts 
+        $ source ./rtisetenv_x64Linux3gcc5.4.0.bash
+        $ cd -
+    * Build the code in the workspace
+        $ cd ~/ros2_ws/
+        $ colcon build --symlink-install
+    * Try some examples
+        # run talker
+            $ . ~/ros2_ws/install/local_setup.bash 
+            $ ros2 run demo_nodes_cpp talker
+        # run listener
+            $ . ~/ros2_ws/install/local_setup.bash 
+            $ ros2 run demo_nodes_py listener
+
+# http://emanual.robotis.com/docs/en/platform/turtlebot3/ros2/#ros2
+# Install TurtleBot3 ROS2 Packages
+# [Remote PC] Download turtlebot3 packages and install some dependencies for ROS2
+    # Install Cartographer dependencies
+    $ sudo apt install -y \
+        google-mock \
+        libceres-dev \
+        liblua5.3-dev \
+        libboost-dev \
+        libboost-iostreams-dev \
+        libprotobuf-dev \
+        protobuf-compiler \
+        libcairo2-dev \
+        libpcl-dev \
+        python3-sphinx
+    # Install Gazebo9
+    $ curl -sSL http://get.gazebosim.org | sh
+    # Install Navigation2 dependencies
+    $ sudo apt install -y \
+        libsdl-image1.2 \
+        libsdl-image1.2-dev \
+        libsdl1.2debian \
+        libsdl1.2-dev
