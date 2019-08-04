@@ -183,6 +183,7 @@ $ sudo vi /etc/hosts
     $ cd ~/catkin_ws/src
     $ git clone https://github.com/UbiquityRobotics/raspicam_node.git 
     $ cd ~/catkin_ws && catkin_make
+    $ roslaunch turtlebot3_bringup turtlebot3_robot.launch
     $ roslaunch turtlebot3_bringup turtlebot3_rpicamera.launch
     or
     $ roslaunch raspicam_node camerav2_1280x960.launch

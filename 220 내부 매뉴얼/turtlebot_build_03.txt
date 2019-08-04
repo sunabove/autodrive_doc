@@ -89,14 +89,54 @@
         python3-sphinx
     # Install Gazebo9
     $ curl -sSL http://get.gazebosim.org | sh
+    $ sudo apt install ros-dashing-gazebo-*
     # Install Navigation2 dependencies
     $ sudo apt install -y \
         libsdl-image1.2 \
         libsdl-image1.2-dev \
         libsdl1.2debian \
         libsdl1.2-dev
+    # Install vcstool
+    $ sudo apt install python3-vcstool    
     $ mkdir -p ~/turtlebot3_ws/src
     $ cd ~/turtlebot3_ws
     $ wget https://raw.githubusercontent.com/ROBOTIS-GIT/turtlebot3/ros2/turtlebot3.repos
     $ vcs import src < turtlebot3.repos
     $ colcon build --symlink-install
+
+# 15.1.2 SBC setup
+    [TurtleBot]
+    $ export ROS2_DISTRO=dashing    #distro you want
+    $ cd
+    $ wget https://github.com/ROBOTIS-GIT/turtlebot3/raw/ros2/turtlebot3_sbc_settings/$ROS2_DISTRO/tb3_sbc_settings.tar.bz2
+    $ tar -xjf tb3_sbc_settings.tar.bz2
+    $ cd tb3_sbc_settings
+    $ ./install.sh
+
+# 15.1.3 OpenCR setup
+    [TurtleBot] Upload firmware for ROS2.
+    $ export OPENCR_PORT=/dev/ttyACM0   #OpenCR port
+    $ export OPENCR_MODEL=burger        #tb3 model you want
+    $ cd ~/tb3_sbc_settings 
+    $ ./opencr_fw_update.sh ${OPENCR_PORT} ${OPENCR_MODEL}
+    [TurtleBot] Reset OpenCR using RESET button.
+
+# 15.2 Bringup
+# 15.2.1 Bringup TurtleBot3
+    [TurtleBot], [RemotePC] Sync time between TurtleBot and RemotePC
+    $ sudo apt install ntpdate
+    $ sudo ntpdate ntp.ubuntu.com
+    [TurtleBot] Run two Micro-XRCE-DDS Agent for OpenCR and Lidar, and run Lidar Micro-XRCE-DDS Client
+    $ cd ~/tb3_sbc_settings && ./run.sh
+    [Remote PC] Launch robot include robot_state_publisher and turtlebot3_node
+    $ export TURTLEBOT3_MODEL=${TB3_MODEL}
+    $ ros2 launch turtlebot3_bringup robot.launch.py
+    # And you can check topic list as shown below
+    $ ros2 topic list
+
+# 15.2.2 Rviz2
+    [Remote PC] Run Rviz2
+    $ ros2 launch turtlebot3_bringup rviz2.launch.py
+
+
+# end of file
