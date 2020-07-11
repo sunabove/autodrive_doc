@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+*.ini
+200 참고 자료/desktop.ini
+*.ini
